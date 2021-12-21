@@ -2,10 +2,10 @@
 A Python implementation of Nacos OpenAPI.
 
 see: https://nacos.io/zh-cn/docs/open-API.html
-Forked From https://github.com/nacos-group/nacos-sdk-python
 
-[![Pypi Version](https://badge.fury.io/py/nacos-sdk-python.svg)](https://badge.fury.io/py/nacos-sdk-python)
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/nacos-group/nacos-sdk-python/blob/master/LICENSE)
+
+[![Pypi Version](https://badge.fury.io/py/nacos-py.svg)](https://badge.fury.io/py/nacos-py)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/arckalsun/nacos-py/blob/master/LICENSE)
 
 
 ### Supported Python version：
@@ -285,3 +285,4 @@ NacosClient.set_debugging()
 # only effective within the current process
 ```
 
+This Project Starts From https://github.com/nacos-group/nacos-sdk-python
