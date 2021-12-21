@@ -1,4 +1,4 @@
-# nacos_py
+# nacos-py
 A Python implementation of Nacos OpenAPI.
 
 see: https://nacos.io/zh-cn/docs/open-API.html
