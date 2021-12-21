@@ -83,34 +83,40 @@ class MyConfig(NacosConfig):
 
     PORT = 8001
 
-config = MyConfig('mysqlconfig', "192.168.3.4:8848")
+myconfig = MyConfig('mysqlconfig', "192.168.3.4:8848")
 
 # Use 
-print(config.API_ID) 
+print(myconfig.API_ID) 
 
 ```
 ### 3, Register Service
 ```python
-from nacos_py import NacosService
+from nacos_py import NacosService, NacosClient
 from flask import Flask
 
 app = Flask()
 
+SERVER_ADDRESSES = "server addresses split by comma"
+NAMESPACE = "namespace id"
 # register
-NacosService("SERVICE_NAME", "192.168.3.4:8848").register("192.168.1.10", 8080)
+NacosService("SERVICE_NAME", NacosClient(SERVER_ADDRESSES, namespace=NAMESPACE)).register("192.168.1.10", 8080)
 
 app.run(host='0.0.0.0', port=8080, debug=False)
 ```
 
 ### 4, Query Service & Remote call
 ```python
-from nacos_py import NacosService
+from nacos_py import NacosService, NacosClient
 
-client = NacosService("SERVICE_NAME", "192.168.3.4:8848")
+SERVER_ADDRESSES = "server addresses split by comma"
+NAMESPACE = "namespace id"
+
+client = NacosService("SERVICE_NAME", NacosClient(SERVER_ADDRESSES, namespace=NAMESPACE))
 # subscribe
 client.subscribe("service1")
 # remote call
 resp = client.request("GET", "service1", "/endpoint", params={})
+
 print(resp.text)
 
 ```

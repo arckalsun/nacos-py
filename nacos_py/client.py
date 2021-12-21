@@ -40,7 +40,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 DEBUG = False
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 
 DEFAULT_GROUP_NAME = "DEFAULT_GROUP"
 DEFAULT_NAMESPACE = ""
@@ -54,8 +54,8 @@ DEFAULTS = {
     "PULLING_TIMEOUT": 30,  # in seconds
     "PULLING_CONFIG_SIZE": 3000,
     "CALLBACK_THREAD_NUM": 10,
-    "FAILOVER_BASE": "nacos-py-data/data",
-    "SNAPSHOT_BASE": "nacos-py-data/snapshot",
+    "FAILOVER_BASE": "nacos-data/data",
+    "SNAPSHOT_BASE": "nacos-data/snapshot",
 }
 
 OPTIONS = {"default_timeout", "pulling_timeout", "pulling_config_size", "callback_thread_num", "failover_base",
@@ -220,7 +220,7 @@ class NacosClient:
     def set_debugging():
         if not NacosClient.debug:
             global logger
-            logger = logging.getLogger("nacos-py")
+            logger = logging.getLogger("nacos")
             handler = logging.StreamHandler()
             handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s:%(message)s"))
             logger.addHandler(handler)
@@ -306,7 +306,7 @@ class NacosClient:
             params["tenant"] = self.namespace
 
         try:
-            resp = self._do_sync_req("/nacos-py/v1/cs/configs", None, None, params,
+            resp = self._do_sync_req("/nacos/v1/cs/configs", None, None, params,
                                      timeout or self.default_timeout, "DELETE")
             c = resp.read()
             logger.info("[remove] remove group:%s, data_id:%s, server response:%s" % (
@@ -352,7 +352,7 @@ class NacosClient:
             params["type"] = config_type
 
         try:
-            resp = self._do_sync_req("/nacos-py/v1/cs/configs", None, None, params,
+            resp = self._do_sync_req("/nacos/v1/cs/configs", None, None, params,
                                      timeout or self.default_timeout, "POST")
             c = resp.read()
             logger.info("[publish] publish content, group:%s, data_id:%s, server response:%s" % (
@@ -391,7 +391,7 @@ class NacosClient:
 
         # get from server
         try:
-            resp = self._do_sync_req("/nacos-py/v1/cs/configs", None, params, None, timeout or self.default_timeout)
+            resp = self._do_sync_req("/nacos/v1/cs/configs", None, params, None, timeout or self.default_timeout)
             content = resp.read().decode("UTF-8")
         except HTTPError as e:
             if e.code == HTTPStatus.NOT_FOUND:
@@ -467,7 +467,7 @@ class NacosClient:
 
         # get from server
         try:
-            resp = self._do_sync_req("/nacos-py/v1/cs/configs", None, params, None, timeout or self.default_timeout)
+            resp = self._do_sync_req("/nacos/v1/cs/configs", None, params, None, timeout or self.default_timeout)
             content = resp.read().decode("UTF-8")
         except HTTPError as e:
             if e.code == HTTPStatus.CONFLICT:
@@ -705,12 +705,12 @@ class NacosClient:
 
             changed_keys = list()
             try:
-                resp = self._do_sync_req("/nacos-py/v1/cs/configs/listener", headers, None, data,
+                resp = self._do_sync_req("/nacos/v1/cs/configs/listener", headers, None, data,
                                          self.pulling_timeout + 10, "POST")
                 changed_keys = [group_key(*i) for i in parse_pulling_result(resp.read())]
                 logger.debug("[do-pulling] following keys are changed from server %s" % truncate(str(changed_keys)))
             except NacosException as e:
-                logger.error("[do-pulling] nacos-py exception: %s, waiting for recovery" % str(e))
+                logger.error("[do-pulling] nacos exception: %s, waiting for recovery" % str(e))
                 time.sleep(1)
             except Exception as e:
                 logger.exception("[do-pulling] exception %s occur, return empty list, waiting for recovery" % str(e))
@@ -803,7 +803,7 @@ class NacosClient:
             params["namespaceId"] = self.namespace
 
         try:
-            resp = self._do_sync_req("/nacos-py/v1/ns/instance", None, None, params, self.default_timeout, "POST")
+            resp = self._do_sync_req("/nacos/v1/ns/instance", None, None, params, self.default_timeout, "POST")
             c = resp.read()
             logger.info("[add-naming-instance] ip:%s, port:%s, service_name:%s, namespace:%s, server response:%s" % (
                 ip, port, service_name, self.namespace, c))
@@ -836,7 +836,7 @@ class NacosClient:
             params["namespaceId"] = self.namespace
 
         try:
-            resp = self._do_sync_req("/nacos-py/v1/ns/instance", None, None, params, self.default_timeout, "DELETE")
+            resp = self._do_sync_req("/nacos/v1/ns/instance", None, None, params, self.default_timeout, "DELETE")
             c = resp.read()
             logger.info("[remove-naming-instance] ip:%s, port:%s, service_name:%s, namespace:%s, server response:%s" % (
                 ip, port, service_name, self.namespace, c))
@@ -878,7 +878,7 @@ class NacosClient:
             params["namespaceId"] = self.namespace
 
         try:
-            resp = self._do_sync_req("/nacos-py/v1/ns/instance", None, None, params, self.default_timeout, "PUT")
+            resp = self._do_sync_req("/nacos/v1/ns/instance", None, None, params, self.default_timeout, "PUT")
             c = resp.read()
             logger.info("[modify-naming-instance] ip:%s, port:%s, service_name:%s, namespace:%s, server response:%s" % (
                 ip, port, service_name, self.namespace, c))
@@ -919,7 +919,7 @@ class NacosClient:
             params['groupName'] = group_name
 
         try:
-            resp = self._do_sync_req("/nacos-py/v1/ns/instance/list", None, params, None, self.default_timeout, "GET")
+            resp = self._do_sync_req("/nacos/v1/ns/instance/list", None, params, None, self.default_timeout, "GET")
             c = resp.read()
             logger.info("[list-naming-instance] service_name:%s, namespace:%s, server response:%s" %
                         (service_name, self.namespace, c))
@@ -951,7 +951,7 @@ class NacosClient:
             params["namespaceId"] = self.namespace
 
         try:
-            resp = self._do_sync_req("/nacos-py/v1/ns/instance", None, params, None, self.default_timeout, "GET")
+            resp = self._do_sync_req("/nacos/v1/ns/instance", None, params, None, self.default_timeout, "GET")
             c = resp.read()
             logger.info("[get-naming-instance] ip:%s, port:%s, service_name:%s, namespace:%s, server response:%s" %
                         (ip, port, service_name, self.namespace, c))
@@ -996,7 +996,7 @@ class NacosClient:
             params["namespaceId"] = self.namespace
 
         try:
-            resp = self._do_sync_req("/nacos-py/v1/ns/instance/beat", None, params, None, self.default_timeout, "PUT")
+            resp = self._do_sync_req("/nacos/v1/ns/instance/beat", None, params, None, self.default_timeout, "PUT")
             c = resp.read()
             logger.info("[send-heartbeat] ip:%s, port:%s, service_name:%s, namespace:%s, server response:%s" %
                         (ip, port, service_name, self.namespace, c))
@@ -1013,7 +1013,7 @@ class NacosClient:
     def subscribe(self,
                   listener_fn, listener_interval=7, *args, **kwargs):
         """
-        reference at `/nacos-py/v1/ns/instance/list` in https://nacos.io/zh-cn/docs/open-api.html
+        reference at `/nacos/v1/ns/instance/list` in https://nacos.io/zh-cn/docs/open-api.html
         :param listener_fn           监听方法，可以是元组，列表，单个监听方法
         :param listener_interval     监听间隔，在 HTTP 请求 OpenAPI 时间间隔
         :return:

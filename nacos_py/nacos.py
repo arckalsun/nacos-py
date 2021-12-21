@@ -86,10 +86,9 @@ class NacosService(object):
     '''
     Nacos 注册中心
     '''
-    def __init__(self, service_name, server_addresses, namespace=None, username=None, password=None):
+    def __init__(self, service_name, client: NacosClient):
         self.service_name = service_name
-        self.client = NacosClient(server_addresses, namespace=namespace, username=username,
-                    password=password)
+        self.client = client
         self.beating = True
         self.heartbeatThread = None
         self.headers = {
