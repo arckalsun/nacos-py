@@ -111,7 +111,7 @@ class NacosService(object):
         :param cluster_name:
         :return:
         '''
-        self.client.add_naming_instance(self.service_name, ip, port, cluster_name=None, **kwargs)
+        self.client.add_naming_instance(self.service_name, ip, port, cluster_name=cluster_name, **kwargs)
         self.heartbeatThread = Thread(target=self.run_heartbeat, args=(self.service_name, ip, port, cluster_name,
                                                                        kwargs.get("weight"), kwargs.get("metadata"),), daemon=True)
         self.heartbeatThread.setName("nacos-heartbeat")
